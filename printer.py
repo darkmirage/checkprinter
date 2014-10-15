@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 import urllib2
+import re
 from datetime import datetime
-from lxml import html
 
 response = urllib2.urlopen('https://cardenalprinter.stanford.edu/hp/device/this.LCDispatcher')
 
-tree = html.fromstring(response.read())
-status = tree.xpath("//span[@id='Text17']/text()")
-# status = parsed_html.body.find('span', attrs={'id':'Text17'}).text
-status = status[0]
+html = response.read()
+m = re.findall('id=\"Text17\".*?>(.*?)</span>', html)
+
+status = m[0]
 
 if status.find('Empty') >= 0:
   raise Exception('%s: Printer tray is empty' % datetime.now())
